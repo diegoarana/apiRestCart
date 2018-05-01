@@ -1,6 +1,7 @@
 package com.arana.diego.model;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -10,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.Proxy;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Proxy(lazy=false)
@@ -22,7 +25,8 @@ public class Product {
 	private BigDecimal price;
 	
 	@OneToMany(mappedBy="product")
-	private List<CartProduct> listCart;
+	@JsonIgnore
+	private List<CartProduct> listCart = new ArrayList<CartProduct>();
 	
 	public Product(){}
 	

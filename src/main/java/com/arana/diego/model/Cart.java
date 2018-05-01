@@ -1,22 +1,38 @@
 package com.arana.diego.model;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Proxy;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(
+    name="discriminator",
+    discriminatorType=DiscriminatorType.STRING
+)
+@DiscriminatorValue(value="c")
 @Proxy(lazy=false)
-public abstract class Cart {
+public class Cart {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -26,8 +42,8 @@ public abstract class Cart {
 	@JoinColumn(name="idUser")
 	private User user;
 	
-	@OneToMany(mappedBy="product")
-	private List<CartProduct> listProduct;
+	@OneToMany(fetch=FetchType.EAGER, mappedBy="product", targetEntity= CartProduct.class)
+	protected List<CartProduct> listProduct;
 	
 	private BigDecimal totalAmount;
 	
@@ -41,9 +57,42 @@ public abstract class Cart {
 		this.listProduct = listProduct;
 		this.totalAmount = totalAmount;
 	}
+	
+	
+	// calculo el total de la lista de productos
+	public BigDecimal calculateTotal(){
+		BigDecimal totalCost = BigDecimal.ZERO;
+		for (CartProduct product : this.listProduct){
+			totalCost = totalCost.add(calculateItemCost(product.getQuantity(), product.getProduct().getPrice()));
+		}
+		return totalCost;
+	}
+	
+	//calculo el subtotal de cada item de la lista de productos
+	public BigDecimal calculateItemCost(int quantity, BigDecimal price){
+	    BigDecimal itemCost  = BigDecimal.ZERO;
+	    BigDecimal subtotalCost = BigDecimal.ZERO;
+	    itemCost = price.multiply(new BigDecimal(quantity));
+	    subtotalCost = subtotalCost.add(itemCost);
+		return subtotalCost;
+	}
 
-
-	public abstract Double calculateTotalPrice();
+	// calculo precio total de carrito comun
+	public BigDecimal calculateTotalPrice(){
+		
+		if(!this.listProduct.isEmpty() && this.listProduct != null){
+			BigDecimal total = calculateTotal();
+			if(this.listProduct.size() == 5){
+				BigDecimal discount = total.multiply(new BigDecimal(0.20));
+				total = total.subtract(discount);
+			}else if (this.listProduct.size() > 10){
+				BigDecimal discount = new BigDecimal(200);
+				total = total.subtract(discount);
+			}
+			return total;
+		}
+		return BigDecimal.ZERO;
+	}
 	
 	public Long getId() {
 		return id;

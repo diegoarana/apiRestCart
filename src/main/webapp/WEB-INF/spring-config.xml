@@ -43,7 +43,6 @@
    			 <value>com.arana.diego.model.Cart</value>
    			 <value>com.arana.diego.model.SpecialDateCart</value>
    			 <value>com.arana.diego.model.VipCart</value>
-   			 <value>com.arana.diego.model.SimpleCart</value>
    			 <value>com.arana.diego.model.CartProduct</value>
    			 
    		 </list>
@@ -84,11 +83,12 @@
     
     <bean id="cartDAO" class="com.arana.diego.data.CartDAO" />
     <bean id="cartService" class="com.arana.diego.service.CartService" />
+	
+	<bean id="cartProductDAO" class="com.arana.diego.data.CartProductDAO" />
+    <bean id="cartProductService" class="com.arana.diego.service.CartProductService" />        
     
-<!--     <bean id="productDAO" class="com.arana.diego.data.ProductDAO" /> -->
-<!--     <bean id="productService" class="com.arana.diego.service.ProductService" /> -->
-    
-    
+    <bean id="productDAO" class="com.arana.diego.data.ProductDAO" />
+    <bean id="productService" class="com.arana.diego.service.ProductService" />
     
     
 </beans> 

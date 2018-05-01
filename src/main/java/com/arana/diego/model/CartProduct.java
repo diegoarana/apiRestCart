@@ -4,23 +4,30 @@ import java.io.Serializable;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.annotations.Proxy;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
+@Proxy(lazy=false)
 public class CartProduct implements Serializable{
 	
 	private int quantity;
 	
 	@Id
-	@ManyToOne(cascade=CascadeType.PERSIST)
+	@ManyToOne(fetch=FetchType.EAGER, cascade=CascadeType.PERSIST)
 	@JoinColumn(name="idCart")
+	@JsonIgnore
 	private Cart cart;
 	
 	@Id
-	@ManyToOne(cascade=CascadeType.PERSIST)
-	@JoinColumn(name="idPoduct")
+	@ManyToOne(fetch=FetchType.EAGER, cascade=CascadeType.PERSIST)
+	@JoinColumn(name="idProduct")
 	private Product product;
 	
 	

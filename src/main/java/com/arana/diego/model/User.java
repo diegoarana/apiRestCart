@@ -8,6 +8,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class User {
 	
@@ -18,6 +20,7 @@ public class User {
 	private Boolean vip;
 	
 	@OneToMany(mappedBy="user")
+	@JsonIgnore
 	private List<Cart> lisCart; 
 	
 	public User(){}
