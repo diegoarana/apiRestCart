@@ -43,7 +43,7 @@ public class CartController {
 	
 	private Boolean specialDate = false;
 	
-	// creando un carrito nuevo
+//------------------------------- creando un carrito nuevo
 	@RequestMapping(value="create/", method = RequestMethod.POST)
 	public ResponseEntity<Cart> createCart(@RequestBody User user){
 		
@@ -74,34 +74,43 @@ public class CartController {
 		return new ResponseEntity<Cart>(newCart, HttpStatus.CREATED);
 	}
 	
-	// trayendo un carrito por id
+	
+//---------------------------------------- trayendo un carrito por id
 	@RequestMapping(value="getCart/{cartId}", method = RequestMethod.GET)
 	public ResponseEntity<Cart> getCart(@PathVariable("cartId") Long cartId){
 		
-		Cart cart = cartService.getCart(cartId);
-		cart.setListProduct(cartProductService.getProducts(cartId));
-		
-		if (cart.getUser().getVip()){
+		try{
 			
-			VipCart vipcart = (VipCart) cart;
-			vipcart.setTotalAmount(vipcart.calculateTotalPrice());
-			return new ResponseEntity<Cart>(vipcart, HttpStatus.OK);
+			Cart cart = cartService.getCart(cartId);
+			cart.setListProduct(cartProductService.getProducts(cartId));
 			
-		}else if(specialDate){
+			if (cart.getUser().getVip()){
+				
+				VipCart vipcart = (VipCart) cart;
+				vipcart.setTotalAmount(vipcart.calculateTotalPrice());
+				return new ResponseEntity<Cart>(vipcart, HttpStatus.OK);
+				
+			}else if(specialDate){
+				
+				SpecialDateCart specialCart = (SpecialDateCart) cart;
+				specialCart.setTotalAmount(specialCart.calculateTotalPrice());
+				return new ResponseEntity<Cart>(specialCart, HttpStatus.OK);
+				
+			} else{
+				
+				cart.setTotalAmount(cart.calculateTotalPrice());
+				return new ResponseEntity<Cart>(cart, HttpStatus.OK);
+				
+			}
 			
-			SpecialDateCart specialCart = (SpecialDateCart) cart;
-			specialCart.setTotalAmount(specialCart.calculateTotalPrice());
-			return new ResponseEntity<Cart>(specialCart, HttpStatus.OK);
-			
-		} else{
-			
-			cart.setTotalAmount(cart.calculateTotalPrice());
-			return new ResponseEntity<Cart>(cart, HttpStatus.OK);
-			
+		}catch(Exception e){
+			Cart emptycart = new Cart();
+			return new ResponseEntity<Cart>(emptycart, HttpStatus.BAD_REQUEST);
 		}
 		
 	}
 	
+// -------------------------------------Eliminando carrito	
 	@RequestMapping(value="deleteCart/{cartId}", method=RequestMethod.DELETE)
 	public ResponseEntity<Void> deleteCart(@PathVariable("cartId") Long id ){
 		
@@ -116,6 +125,47 @@ public class CartController {
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
 	
+	
+// -----------------------------------pagando carrito
+	@RequestMapping(value="payCart/", method= RequestMethod.POST)
+	public ResponseEntity<Void> payCart(@RequestBody Cart payCart){
+		
+		// el pago de un carrito solamente persiste el monto total del carrito
+		
+		try {
+			Cart cart = cartService.getCart(payCart.getId());
+			cart.setListProduct(cartProductService.getProducts(payCart.getId()));
+			
+			if (cart.getUser().getVip()){
+				
+				VipCart vipcart = (VipCart) cart;
+				vipcart.setTotalAmount(vipcart.calculateTotalPrice());
+				cartService.updateCart(vipcart);
+				return new ResponseEntity<Void>(HttpStatus.OK);
+				
+			}else if(specialDate){
+				
+				SpecialDateCart specialCart = (SpecialDateCart) cart;
+				specialCart.setTotalAmount(specialCart.calculateTotalPrice());
+				cartService.updateCart(specialCart);
+				return new ResponseEntity<Void>(HttpStatus.OK);
+				
+			} else{
+				
+				cart.setTotalAmount(cart.calculateTotalPrice());
+				cartService.updateCart(cart);
+				return new ResponseEntity<Void>(HttpStatus.OK);
+				
+			}
+		}catch(Exception e){
+			return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+		}
+	
+		
+	}
+	
+	
+// ---------------------------------devolver los cuatro productos mas caros
 	@RequestMapping(value="getMoreExpensiveProducts/", method=RequestMethod.POST)
 	public ResponseEntity<List<Product>> getMoreExpensiveProducts(@RequestBody User user){
 		

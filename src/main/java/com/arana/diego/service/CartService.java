@@ -26,4 +26,9 @@ public class CartService implements ICartService{
 		
 	}
 
+	public void updateCart(Cart cart) {
+		cartDAO.updateCart(cart);
+		
+	}
+
 }

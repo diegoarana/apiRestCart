@@ -39,6 +39,8 @@ public class CartProductController {
 	@Autowired
 	IProductService productService;
 	
+//  ----------------------------------------- AGREGANDO PRODUCTOS AL CARRITO
+	
 	@RequestMapping(value="addCartProduct/", method=RequestMethod.POST)
 	public ResponseEntity<Cart> addCartProduct(@RequestBody String body) throws JsonProcessingException, IOException{
 		
@@ -107,6 +109,8 @@ public class CartProductController {
 		
 	}
 	
+	
+// ----------------------------------------- ELIMINANDO UN PRODUCTO DEL CARRITO
 	
 	@RequestMapping(value="deleteCartProduct/{cartId}/{productId}", method= RequestMethod.DELETE)
 	public ResponseEntity<Cart> deteleCartProduct(@PathVariable("cartId") Long cartId, @PathVariable("productId") Long productId){

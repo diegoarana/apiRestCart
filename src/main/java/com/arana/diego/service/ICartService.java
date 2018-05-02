@@ -9,5 +9,7 @@ public interface ICartService {
 	public Cart getCart(Long cartId);
 	
 	public void deleteCart(Cart cart);
+	
+	public void updateCart(Cart cart);
 
 }

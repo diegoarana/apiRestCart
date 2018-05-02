@@ -48,5 +48,13 @@ public class CartDAO implements ICartDAO{
 		session.close();
 		
 	}
+	
+	public void updateCart(Cart cart){
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		session.merge(cart);
+		tx.commit();
+		session.close();
+	}
 
 }
