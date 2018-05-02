@@ -163,5 +163,11 @@ public class CartProductController {
 			}
 			
 		}
+	
+	@RequestMapping(value="getProducts/", method = RequestMethod.GET)
+	public ResponseEntity<List<Product>> getProductList(){
+		List<Product> responseList = productService.listProducts();
+		return new ResponseEntity<List<Product>>(responseList, HttpStatus.OK);
+	}
 
 }
