@@ -1,6 +1,7 @@
 package com.arana.diego.model;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -24,10 +25,12 @@ public class SpecialDateCart extends Cart {
 		
 		if(!this.listProduct.isEmpty() && this.listProduct != null){
 			BigDecimal total = calculateTotal();
-			if(this.listProduct.size() == 5){
+			int totalProducts = getTotalProducts(this.listProduct);
+			if(totalProducts == 5){
 				BigDecimal discount = total.multiply(new BigDecimal(0.20));
-				total = total.subtract(discount);
-			}else if (this.listProduct.size() > 10){
+				BigDecimal discountRounded = discount.setScale(2, RoundingMode.DOWN);
+				total = total.subtract(discountRounded);
+			}else if (totalProducts > 10){
 				BigDecimal discount = new BigDecimal(500);
 				total = total.subtract(discount);
 			}

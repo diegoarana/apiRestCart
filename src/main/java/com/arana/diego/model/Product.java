@@ -66,6 +66,25 @@ public class Product {
 	public void setListCart(List<CartProduct> listCart) {
 		this.listCart = listCart;
 	}
+	
+    public int hashCode(){
+        System.out.println("In hashcode");
+        int hashcode = 0;
+        hashcode = id.intValue()*20;
+        hashcode += name.hashCode();
+        return hashcode;
+    }
+    
+    
+    public boolean equals(Object obj){
+        System.out.println("In equals");
+        if (obj instanceof Product) {
+            Product pp = (Product) obj;
+            return (pp.name.equals(this.name) && pp.id == this.id);
+        } else {
+            return false;
+        }
+    }
 
 
 }

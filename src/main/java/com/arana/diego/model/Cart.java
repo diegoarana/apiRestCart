@@ -1,6 +1,7 @@
 package com.arana.diego.model;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import javax.persistence.DiscriminatorColumn;
@@ -41,7 +42,7 @@ public class Cart {
 	private User user;
 	
 	@Cascade(CascadeType.DELETE)
-	@OneToMany(fetch=FetchType.EAGER, mappedBy="product", targetEntity= CartProduct.class)
+	@OneToMany(mappedBy="product", targetEntity= CartProduct.class)
 	protected List<CartProduct> listProduct;
 	
 	private BigDecimal totalAmount;
@@ -75,16 +76,28 @@ public class Cart {
 	    subtotalCost = subtotalCost.add(itemCost);
 		return subtotalCost;
 	}
+	
+	
+	// retorna la cantidad de productos en el carrito
+	public int getTotalProducts(List<CartProduct> productList){
+		int productQuantity = 0;
+		for(CartProduct item : productList){
+			productQuantity += item.getQuantity();
+		}
+		return productQuantity;
+	}
 
 	// calculo precio total de carrito comun
 	public BigDecimal calculateTotalPrice(){
 		
 		if(!this.listProduct.isEmpty() && this.listProduct != null){
 			BigDecimal total = calculateTotal();
-			if(this.listProduct.size() == 5){
+			int totalProducts = getTotalProducts(this.listProduct);
+			if( totalProducts == 5){
 				BigDecimal discount = total.multiply(new BigDecimal(0.20));
-				total = total.subtract(discount);
-			}else if (this.listProduct.size() > 10){
+				BigDecimal discountRounded = discount.setScale(2, RoundingMode.DOWN);
+				total = total.subtract(discountRounded);
+			}else if ( totalProducts > 10){
 				BigDecimal discount = new BigDecimal(200);
 				total = total.subtract(discount);
 			}

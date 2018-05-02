@@ -1,5 +1,13 @@
 package com.arana.diego.controller;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Predicate;
+
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,12 +20,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.arana.diego.model.Cart;
+import com.arana.diego.model.CartProduct;
+import com.arana.diego.model.Product;
 import com.arana.diego.model.SpecialDateCart;
 import com.arana.diego.model.User;
 import com.arana.diego.model.VipCart;
 import com.arana.diego.service.ICartProductService;
 import com.arana.diego.service.ICartService;
 import com.arana.diego.service.IUserService;
+import com.arana.diego.service.ProductService;
 
 @CrossOrigin(origins ="*")
 @RestController
@@ -68,7 +79,6 @@ public class CartController {
 	public ResponseEntity<Cart> getCart(@PathVariable("cartId") Long cartId){
 		
 		Cart cart = cartService.getCart(cartId);
-		Hibernate.initialize(cart.getListProduct());
 		cart.setListProduct(cartProductService.getProducts(cartId));
 		
 		if (cart.getUser().getVip()){
@@ -105,5 +115,79 @@ public class CartController {
 		
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
+	
+	@RequestMapping(value="getMoreExpensiveProducts/", method=RequestMethod.POST)
+	public ResponseEntity<List<Product>> getMoreExpensiveProducts(@RequestBody User user){
+		
+		try {
+			
+			User userLogged = userService.getUser(user.getDni());
+			
+			List<Cart> cartList = userLogged.getLisCart();
+			
+			// elimino de la lista los carritos que tienen monto total en null
+			setCartsWithTotalAmount(cartList);
+			
+			loadCartProducts(cartList);
+			// creo un set con la lista de los porductos de todos los carritos comprados
+			Set<Product> productsSet = nonRepeatedProducts(cartList);
+			
+			List<Product> productList = new ArrayList<Product>(productsSet);
+			// ordeno la lista de producto por precio
+			sortListProduct(productList);
+			
+			// genero la sublista que devuelve los 4 productos mas caros
+			List<Product> responseList = productList.subList(0, 4); 
+			
+			return new ResponseEntity<List<Product>>(responseList, HttpStatus.OK);
+			
+		}catch(Exception e){
+			List<Product> emptyList = new ArrayList<Product>();
+			return new ResponseEntity<List<Product>>(emptyList, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+	
+	
+	
+	
+	public void loadCartProducts(List<Cart> cartList){
+		for(Cart cart : cartList){
+			cart.setListProduct(cartProductService.getProducts(cart.getId()));
+		}
+	}
+	
+	
+	public Set<Product> nonRepeatedProducts(List<Cart> cartList){
+		Set<Product> setOfProducts = new HashSet<Product>();
+		for (Cart cart : cartList){
+			for (CartProduct item : cart.getListProduct()){
+				setOfProducts.add(item.getProduct());
+			}
+			
+		}
+		
+		return setOfProducts;
+	}
+	
+	
+	public void setCartsWithTotalAmount(List<Cart> cartList){
+		cartList.removeIf(new Predicate<Cart>() {
+			public boolean test(Cart c) {
+				return c.getTotalAmount() == null;
+				}
+			});
+	}
+	
+	
+	public void sortListProduct(List<Product> productList){
+		Collections.sort(productList, new Comparator<Product>() {
+
+	        public int compare(Product p1, Product p2) {
+	            return p2.getPrice().compareTo(p1.getPrice());
+	        }
+	    });
+	}
+	
 
 }

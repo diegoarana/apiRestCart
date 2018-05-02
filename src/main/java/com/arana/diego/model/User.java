@@ -3,6 +3,7 @@ package com.arana.diego.model;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,7 +20,7 @@ public class User {
 	private int dni;
 	private Boolean vip;
 	
-	@OneToMany(mappedBy="user")
+	@OneToMany(fetch =FetchType.EAGER, mappedBy="user")
 	@JsonIgnore
 	private List<Cart> lisCart; 
 	
