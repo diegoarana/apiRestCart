@@ -27,4 +27,9 @@ public class CartProductService implements ICartProductService{
 		
 	}
 
+	public void deleteCartProduct(CartProduct cartProduct) {
+		cartProductDAO.deleteCartProduct(cartProduct);
+		
+	}
+
 }

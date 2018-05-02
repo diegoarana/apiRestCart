@@ -1,7 +1,6 @@
 package com.arana.diego.model;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.DiscriminatorColumn;
@@ -18,11 +17,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Proxy;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
@@ -42,6 +40,7 @@ public class Cart {
 	@JoinColumn(name="idUser")
 	private User user;
 	
+	@Cascade(CascadeType.DELETE)
 	@OneToMany(fetch=FetchType.EAGER, mappedBy="product", targetEntity= CartProduct.class)
 	protected List<CartProduct> listProduct;
 	

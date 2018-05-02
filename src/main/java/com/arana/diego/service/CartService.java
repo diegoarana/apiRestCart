@@ -17,9 +17,13 @@ public class CartService implements ICartService{
 		
 	}
 	
-//	@Transactional(propagation=Propagation.REQUIRED, readOnly=true, noRollbackFor=Exception.class)
 	public Cart getCart(Long cartId) {
 		return cartDAO.getCart(cartId);
+	}
+
+	public void deleteCart(Cart cart) {
+		cartDAO.deleteCart(cart);
+		
 	}
 
 }

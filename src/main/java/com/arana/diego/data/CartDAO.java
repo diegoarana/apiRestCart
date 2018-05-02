@@ -38,4 +38,15 @@ public class CartDAO implements ICartDAO{
 		return cart;
 	}
 
+
+	public void deleteCart(Cart cart) {
+		
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		session.delete(cart);
+		tx.commit();
+		session.close();
+		
+	}
+
 }

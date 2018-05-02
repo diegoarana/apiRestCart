@@ -1,11 +1,7 @@
 package com.arana.diego.controller;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.arana.diego.model.Cart;
-import com.arana.diego.model.CartProduct;
 import com.arana.diego.model.SpecialDateCart;
 import com.arana.diego.model.User;
 import com.arana.diego.model.VipCart;
@@ -95,6 +90,20 @@ public class CartController {
 			
 		}
 		
+	}
+	
+	@RequestMapping(value="deleteCart/{cartId}", method=RequestMethod.DELETE)
+	public ResponseEntity<Void> deleteCart(@PathVariable("cartId") Long id ){
+		
+		try {
+			Cart cart = cartService.getCart(id);
+			cart.setListProduct(cartProductService.getProducts(id));
+			cartService.deleteCart(cart);
+		}catch(Exception e){
+			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+		}
+		
+		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
 
 }

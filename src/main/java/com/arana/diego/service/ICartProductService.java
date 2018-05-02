@@ -11,5 +11,7 @@ public interface ICartProductService {
 	public void addCartProduct(CartProduct cartProduct);
 	
 	public void updateCartProduct(CartProduct cartProduct);
+	
+	public void deleteCartProduct(CartProduct cartProduct);
 
 }

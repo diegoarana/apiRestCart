@@ -7,5 +7,7 @@ public interface ICartDAO {
 	public Cart createCart(Cart newCart);
 	
 	public Cart getCart(Long cartId);
+	
+	public void deleteCart(Cart cart);
 
 }
