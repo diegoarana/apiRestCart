@@ -43,7 +43,7 @@ public class CartController {
 	
 	private Boolean specialDate = false;
 	
-//------------------------------- creando un carrito nuevo
+//------------------------------- CREANDO UN CARRITO
 	@RequestMapping(value="create/", method = RequestMethod.POST)
 	public ResponseEntity<Cart> createCart(@RequestBody User user){
 		
@@ -75,34 +75,19 @@ public class CartController {
 	}
 	
 	
-//---------------------------------------- trayendo un carrito por id
+//---------------------------------------- TRAE CARRITO POR ID
 	@RequestMapping(value="getCart/{cartId}", method = RequestMethod.GET)
 	public ResponseEntity<Cart> getCart(@PathVariable("cartId") Long cartId){
 		
 		try{
-			
+			// EL CART QUE TRAE EL SERVICE YA ES DE LA CLASE CON LA QUE SE GUARDÓ, EL DISCRIMINANTE HACE ESO
+			// NO HACE FALTA CASTEAR
 			Cart cart = cartService.getCart(cartId);
 			cart.setListProduct(cartProductService.getProducts(cartId));
-			
-			if (cart.getUser().getVip()){
 				
-				VipCart vipcart = (VipCart) cart;
-				vipcart.setTotalAmount(vipcart.calculateTotalPrice());
-				return new ResponseEntity<Cart>(vipcart, HttpStatus.OK);
+			cart.setTotalAmount(cart.calculateTotalPrice());
+			return new ResponseEntity<Cart>(cart, HttpStatus.OK);
 				
-			}else if(specialDate){
-				
-				SpecialDateCart specialCart = (SpecialDateCart) cart;
-				specialCart.setTotalAmount(specialCart.calculateTotalPrice());
-				return new ResponseEntity<Cart>(specialCart, HttpStatus.OK);
-				
-			} else{
-				
-				cart.setTotalAmount(cart.calculateTotalPrice());
-				return new ResponseEntity<Cart>(cart, HttpStatus.OK);
-				
-			}
-			
 		}catch(Exception e){
 			Cart emptycart = new Cart();
 			return new ResponseEntity<Cart>(emptycart, HttpStatus.BAD_REQUEST);
@@ -110,7 +95,7 @@ public class CartController {
 		
 	}
 	
-// -------------------------------------Eliminando carrito	
+// ------------------------------------- ELIMINANDO CARRITO
 	@RequestMapping(value="deleteCart/{cartId}", method=RequestMethod.DELETE)
 	public ResponseEntity<Void> deleteCart(@PathVariable("cartId") Long id ){
 		
@@ -126,7 +111,7 @@ public class CartController {
 	}
 	
 	
-// -----------------------------------pagando carrito
+// -----------------------------------	PAGANDO CARRITO
 	@CrossOrigin(origins ="*")
 	@RequestMapping(value="payCart/", method= RequestMethod.POST)
 	public ResponseEntity<Cart> payCart(@RequestBody Cart payCart){
@@ -137,29 +122,14 @@ public class CartController {
 			Cart cart = cartService.getCart(payCart.getId());
 			cart.setListProduct(cartProductService.getProducts(payCart.getId()));
 			
+			// devuelvo un carrito vacio para que el front no reviente, devolver un Void dentro del responseEntity y buscar solucion desde el front
 			Cart emptyCart = new Cart();
+				
+			cart.setTotalAmount(cart.calculateTotalPrice());
+			cartService.updateCart(cart);
 			
-			if (cart.getUser().getVip()){
+			return new ResponseEntity<Cart>(emptyCart, HttpStatus.OK);
 				
-				VipCart vipcart = (VipCart) cart;
-				vipcart.setTotalAmount(vipcart.calculateTotalPrice());
-				cartService.updateCart(vipcart);
-				return new ResponseEntity<Cart>(emptyCart, HttpStatus.OK);
-				
-			}else if(specialDate){
-				
-				SpecialDateCart specialCart = (SpecialDateCart) cart;
-				specialCart.setTotalAmount(specialCart.calculateTotalPrice());
-				cartService.updateCart(specialCart);
-				return new ResponseEntity<Cart>(emptyCart, HttpStatus.OK);
-				
-			} else{
-				
-				cart.setTotalAmount(cart.calculateTotalPrice());
-				cartService.updateCart(cart);
-				return new ResponseEntity<Cart>(emptyCart, HttpStatus.OK);
-				
-			}
 		}catch(Exception e){
 			return new ResponseEntity<Cart>(HttpStatus.BAD_REQUEST);
 		}
@@ -168,7 +138,8 @@ public class CartController {
 	}
 	
 	
-// ---------------------------------devolver los cuatro productos mas caros
+// ---------------------------------	DEVOLVER LOS CUATRO PRODUCTOS MAS CAROS
+// hacer una query en vez de hacer toda la logica
 	@RequestMapping(value="getMoreExpensiveProducts/", method=RequestMethod.POST)
 	public ResponseEntity<List<Product>> getMoreExpensiveProducts(@RequestBody User user){
 		
