@@ -127,8 +127,9 @@ public class CartController {
 	
 	
 // -----------------------------------pagando carrito
+	@CrossOrigin(origins ="*")
 	@RequestMapping(value="payCart/", method= RequestMethod.POST)
-	public ResponseEntity<Void> payCart(@RequestBody Cart payCart){
+	public ResponseEntity<Cart> payCart(@RequestBody Cart payCart){
 		
 		// el pago de un carrito solamente persiste el monto total del carrito
 		
@@ -136,29 +137,31 @@ public class CartController {
 			Cart cart = cartService.getCart(payCart.getId());
 			cart.setListProduct(cartProductService.getProducts(payCart.getId()));
 			
+			Cart emptyCart = new Cart();
+			
 			if (cart.getUser().getVip()){
 				
 				VipCart vipcart = (VipCart) cart;
 				vipcart.setTotalAmount(vipcart.calculateTotalPrice());
 				cartService.updateCart(vipcart);
-				return new ResponseEntity<Void>(HttpStatus.OK);
+				return new ResponseEntity<Cart>(emptyCart, HttpStatus.OK);
 				
 			}else if(specialDate){
 				
 				SpecialDateCart specialCart = (SpecialDateCart) cart;
 				specialCart.setTotalAmount(specialCart.calculateTotalPrice());
 				cartService.updateCart(specialCart);
-				return new ResponseEntity<Void>(HttpStatus.OK);
+				return new ResponseEntity<Cart>(emptyCart, HttpStatus.OK);
 				
 			} else{
 				
 				cart.setTotalAmount(cart.calculateTotalPrice());
 				cartService.updateCart(cart);
-				return new ResponseEntity<Void>(HttpStatus.OK);
+				return new ResponseEntity<Cart>(emptyCart, HttpStatus.OK);
 				
 			}
 		}catch(Exception e){
-			return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<Cart>(HttpStatus.BAD_REQUEST);
 		}
 	
 		

@@ -98,13 +98,19 @@ public class Cart {
 				BigDecimal discountRounded = discount.setScale(2, RoundingMode.DOWN);
 				total = total.subtract(discountRounded);
 			}else if ( totalProducts > 10){
-				BigDecimal discount = new BigDecimal(200);
-				total = total.subtract(discount);
+				total = this.calculateDiscountByCart(total);
 			}
 			return total;
 		}
 		return BigDecimal.ZERO;
 	}
+	
+	
+	// metodo que calcula el descuento por carrito (sobrescribir metodo en cada clase hija)
+    public BigDecimal calculateDiscountByCart(BigDecimal total){
+		BigDecimal discount = new BigDecimal(200);
+		return total.subtract(discount);
+    }
 	
 	public Long getId() {
 		return id;

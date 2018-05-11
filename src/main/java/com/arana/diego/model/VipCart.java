@@ -1,9 +1,7 @@
 package com.arana.diego.model;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,26 +21,14 @@ public class VipCart extends Cart{
 		super();
 	}
 
-	// calculo percio total para carrito vip
+	
+//	CALCULO EL DESCUENTO PARA UN CARRITO VIP
 	@Override
-	public BigDecimal calculateTotalPrice(){
-		
-		if(!this.listProduct.isEmpty() && this.listProduct != null){
-			BigDecimal total = calculateTotal();
-			int totalProducts = getTotalProducts(this.listProduct);
-			if(totalProducts == 5){
-				BigDecimal discount = total.multiply(new BigDecimal(0.20));
-				BigDecimal discountRounded = discount.setScale(2, RoundingMode.DOWN);
-				total = total.subtract(discountRounded);
-			}else if (totalProducts > 10){
-				BigDecimal discount = new BigDecimal(700);
-				discount = discount.add(lowerCost(this.listProduct));
-				total = total.subtract(discount);
-			}
-			return total;
-		}
-		return BigDecimal.ZERO;
-	}
+	 public BigDecimal calculateDiscountByCart(BigDecimal total){
+		BigDecimal discount = new BigDecimal(700);
+		discount = discount.add(lowerCost(this.listProduct));
+		return total.subtract(discount);
+	    }
 	
 	// obtengo el menor precio de la lista de productos
 	public BigDecimal lowerCost(List<CartProduct> listProduct){

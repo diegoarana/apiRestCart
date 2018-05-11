@@ -19,24 +19,12 @@ public class SpecialDateCart extends Cart {
 		super();
 	}
 
-	//calculo precio total para carrito con descuento por fecha especial
+//	CALCULO EL DESCUENTO PARA UN CARRITO CON PROMOCION POR DIA ESPECIAL
 	@Override
-	public BigDecimal calculateTotalPrice(){
+	 public BigDecimal calculateDiscountByCart(BigDecimal total){
+		BigDecimal discount = new BigDecimal(500);
+		return total.subtract(discount); 
 		
-		if(!this.listProduct.isEmpty() && this.listProduct != null){
-			BigDecimal total = calculateTotal();
-			int totalProducts = getTotalProducts(this.listProduct);
-			if(totalProducts == 5){
-				BigDecimal discount = total.multiply(new BigDecimal(0.20));
-				BigDecimal discountRounded = discount.setScale(2, RoundingMode.DOWN);
-				total = total.subtract(discountRounded);
-			}else if (totalProducts > 10){
-				BigDecimal discount = new BigDecimal(500);
-				total = total.subtract(discount);
-			}
-			return total;
-		}
-		return BigDecimal.ZERO;
-	}
+	    }
 
 }
