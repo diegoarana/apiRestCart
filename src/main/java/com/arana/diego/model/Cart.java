@@ -87,7 +87,7 @@ public class Cart {
 		return productQuantity;
 	}
 
-	// calculo precio total de carrito comun
+	// calculo precio total de carrito 
 	public BigDecimal calculateTotalPrice(){
 		
 		if(!this.listProduct.isEmpty() && this.listProduct != null){
@@ -98,6 +98,7 @@ public class Cart {
 				BigDecimal discountRounded = discount.setScale(2, RoundingMode.DOWN);
 				total = total.subtract(discountRounded);
 			}else if ( totalProducts > 10){
+				// EL DESCUENTO DEPENDE DEL CARRITO, CADA CARRITO TIENE SU PROPIO METODO DE DESCUENTO
 				total = this.calculateDiscountByCart(total);
 			}
 			return total;

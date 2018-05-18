@@ -65,47 +65,17 @@ public class CartProductController {
 			}
 		}
 		
-		// Actualizo el precio total del carrito correspondiente
-		if (cart.getUser().getVip()){
-			VipCart updatedCart = (VipCart) cart;
-			
-			if (existCartProduct){
-				updatedCart.setTotalAmount(updatedCart.calculateTotalPrice());
-				return new ResponseEntity<Cart>(updatedCart, HttpStatus.OK);
-			}else{
-				CartProduct cartProduct = new CartProduct(quantity, cart, newProduct);
-				cartProductService.addCartProduct(cartProduct);
-				updatedCart.setListProduct(cartProductService.getProducts(updatedCart.getId()));
-				updatedCart.setTotalAmount(updatedCart.calculateTotalPrice());
-				return new ResponseEntity<Cart>(updatedCart, HttpStatus.OK);
-			}
-			
-		}else if(specialDate){
-			SpecialDateCart updatedCart = (SpecialDateCart) cart;
-			
-			if (existCartProduct){
-				updatedCart.setTotalAmount(updatedCart.calculateTotalPrice());
-				return new ResponseEntity<Cart>(updatedCart, HttpStatus.OK);
-			}else{
-				CartProduct cartProduct = new CartProduct(quantity, cart, newProduct);
-				cartProductService.addCartProduct(cartProduct);
-				updatedCart.setListProduct(cartProductService.getProducts(updatedCart.getId()));
-				updatedCart.setTotalAmount(updatedCart.calculateTotalPrice());
-				return new ResponseEntity<Cart>(updatedCart, HttpStatus.OK);
-			}
+		// Actualizo el precio total del carrito 
+		if (existCartProduct){
+			cart.setTotalAmount(cart.calculateTotalPrice());
+			return new ResponseEntity<Cart>(cart, HttpStatus.OK);
 		}else{
-			Cart updatedCart = cart;
-			
-			if (existCartProduct){
-				updatedCart.setTotalAmount(updatedCart.calculateTotalPrice());
-				return new ResponseEntity<Cart>(updatedCart, HttpStatus.OK);
-			}else{
-				CartProduct cartProduct = new CartProduct(quantity, cart, newProduct);
-				cartProductService.addCartProduct(cartProduct);
-				updatedCart.setListProduct(cartProductService.getProducts(updatedCart.getId()));
-				updatedCart.setTotalAmount(updatedCart.calculateTotalPrice());
-				return new ResponseEntity<Cart>(updatedCart, HttpStatus.OK);
-			}
+			CartProduct cartProduct = new CartProduct(quantity, cart, newProduct);
+			cartProductService.addCartProduct(cartProduct);
+			cart.setListProduct(cartProductService.getProducts(cart.getId()));
+			cart.setTotalAmount(cart.calculateTotalPrice());
+			return new ResponseEntity<Cart>(cart, HttpStatus.OK);
+		
 		}
 		
 	}
